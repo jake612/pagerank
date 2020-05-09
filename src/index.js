@@ -1,39 +1,53 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
+import {Navbar} from './navbar.js';
+import {Node} from './node.js';
+import {Arrow} from './arrow.js';
 
 class Node_Info{
     constructor(name, val, x, y){
         this.name = name;
         this.val = val;
+        this.x = x;
+        this.y = y;
+        this.degree = 0;
     }
 }
 
-class Node extends Component {
+class Edge_Info{
+    constructor(target_node, dest_node){
+        this.target_node = target_node;
+        this.dest_node = dest_node;
+    }
+}
 
+
+class App extends Component {
     constructor(props){
-        super(props);
+        super(props)
         this.state = {
-            x: this.props.x,
-            y: this.props.y
+            node_num: 0,
+            nodes: [],
+            edges: Set(),
+            selected_node: null,
         }
+
     }
 
-    event_wrapper(e){
-        this.props.on_select();
-        if (e.button === 0) {
-            this.drag_event();
-        } else if (e.button === 2){
-            
-        }
-    }
+    add_edge = (target_node, dest_node) => this.setState((state)=>{edges: state.edges.add(new Edge_Info(target_node, dest_node))})
+
+    delete_edge = (edge) => this.setState((state)=>{edges: state.edges.delete(edge)})
 
     // General outline at w3schools
-    drag_event(){
+    drag_event(node){
+        let index = this.state.nodes.indexOf(node);
         let move = (e) => {
-            console.log(e)
+            node.x = e.pageX - 25;
+            node.y = e.pageY - 105;
+            let updated_arr = this.state.nodes;
+            updated_arr[index] = node;
             this.setState({
-                x: e.pageX - 25,
-                y: e.pageY - 105
+                nodes: updated_arr
             }); 
         }
 
@@ -46,63 +60,15 @@ class Node extends Component {
         document.onmouseup = end_drag;
     }
 
-    render(){
-
-        let className = "node_info"
-        if (this.props.selected){
-            className += " node_selected"
-        }
-
-        return <div className={className} onMouseDown={(e)=>this.event_wrapper(e)} style={{
-                position: "absolute",
-                top: this.state.y + "px",
-                left: this.state.x + "px",
-                backgroundColor: "white",
-                width: "50px",
-                height: "50px",
-                borderRadius: "50%",
-                display: "flex",
-                flexDirection: "column"
-            }}>
-                <p className="node_name">{this.props.name}</p>
-                <p className="node_val">{this.props.val}</p>
-            </div>
-        
-    }
-}
-
-class Navbar extends Component {
-    render(){
-        return <div className="navbar">
-            <button className="nav_button" onClick={this.props.addNode}>Add</button>
-            <button className="nav_button" onClick={this.props.deleteNode}>Delete</button>
-        </div>
-    }
-}
-
-class App extends Component {
-    constructor(props){
-        super(props)
-        this.state = {
-            node_num: 0,
-            nodes: [],
-            selected_node: null,
-        }
-
-    }
-
     select_node = (node) => {
-        console.log(node);
         this.setState({selected_node: node})
     }
 
     delete_node = () => {
         let delete_index = this.state.nodes.indexOf(this.state.selected_node);
-        console.log(delete_index)
         if (delete_index > -1){
             let new_arr = this.state.nodes
             new_arr.splice(delete_index, 1)
-            console.log(new_arr)
             this.setState({
                 select_node: null,
                 nodes: new_arr
@@ -116,14 +82,15 @@ class App extends Component {
         this.setState((state) => {
             return {
                 node_num: state.node_num += 1,
-                nodes: state.nodes.concat(new Node_Info(state.node_num, 1))};
+                nodes: state.nodes.concat(new Node_Info(state.node_num, 1, 50, 50))};
           });
     }
 
     render(){
-        return <div className="app">
-            {this.state.nodes.map(node => <Node name={node.name} val={node.val} x={50} y={50} 
-            selected={this.is_selected(node)} on_select={() => this.select_node(node)}/>)}
+        return <div className="app" onMouseDown={()=>this.arrow_event()}>
+            {this.state.nodes.map(node => <Node name={node.name} val={node.val} x={node.x} y={node.y}
+            //{this.state.edges.values.map(edge => <Arrow f)}
+            selected={this.is_selected(node)} on_select={() => this.select_node(node)} drag_event={()=>this.drag_event(node)}/>)}
             <Navbar addNode={this.add_node} deleteNode={this.delete_node} />
         </div>
     }
@@ -131,3 +98,4 @@ class App extends Component {
 
 ReactDOM.render(<App/>, document.getElementById("root"))
 
+// <Arrow x={50} y={50} width={200} angle={0} />
