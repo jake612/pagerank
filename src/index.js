@@ -120,8 +120,8 @@ class App extends Component {
             })}
 
             {Array.from(this.state.edges).map(edge=>{
-                let info = arrow_info(edge.target_node.x, edge.target_node.y, edge.dest_node.x, edge.dest_node.y);
-                return <Arrow x={info.get("x")} y={info.get("y")} width={info.get("width")} angle={info.get("angle")}/>})}
+                //let info = arrow_info(edge.target_node.x, edge.target_node.y, edge.dest_node.x, edge.dest_node.y);
+                return <Arrow target_node={edge.target_node} dest_node={edge.dest_node}/>})}
             
             <Navbar addNode={this.add_node} deleteNode={this.delete_node} />
         </div>
