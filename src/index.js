@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {Navbar} from './navbar.js';
 import {Node} from './node.js';
-import {Arrow} from './arrow.js';
+import {Arrow, arrow_info} from './arrow.js';
 
 class Node_Info{
     constructor(name, val, x, y){
@@ -27,11 +27,40 @@ class App extends Component {
         super(props)
         this.state = {
             node_num: 0,
-            nodes: [],
-            edges: Set(),
+            nodes: new Set(),
+            edges: new Set(),
             selected_node: null,
         }
 
+    }
+
+    array_event = (e) => {
+        if (e.button != 2 || this.state.selected_node === null) {
+            return
+        }
+
+        let target_node = this.state.selected_node;
+
+        let end_drag = (event) => {
+            let target_elem = event.target;
+            if (target_elem.className === "node_name" || target_elem.className === "node_val") target_elem = target_elem.closest("div");
+            try{
+                let id = target_elem.id
+                let dest_node = Array.from(this.state.nodes).filter((node)=>node.name===id);
+                if (dest_node.length !==0){
+                    let edge = new Edge_Info(target_node, dest_node[0]);
+                    console.log(edge);
+                    this.setState(state=>{edges: state.edges.add(edge)});
+                }
+
+            }catch(err){
+                console.log(err);
+            }
+
+            document.onmouseup = null;
+        }
+
+        document.onmouseup = end_drag;
     }
 
     add_edge = (target_node, dest_node) => this.setState((state)=>{edges: state.edges.add(new Edge_Info(target_node, dest_node))})
@@ -40,14 +69,14 @@ class App extends Component {
 
     // General outline at w3schools
     drag_event(node){
-        let index = this.state.nodes.indexOf(node);
         let move = (e) => {
+            let new_set = this.state.nodes;
+            new_set.delete(node);
             node.x = e.pageX - 25;
             node.y = e.pageY - 105;
-            let updated_arr = this.state.nodes;
-            updated_arr[index] = node;
+            new_set.add(node);
             this.setState({
-                nodes: updated_arr
+                nodes: new_set
             }); 
         }
 
@@ -65,15 +94,12 @@ class App extends Component {
     }
 
     delete_node = () => {
-        let delete_index = this.state.nodes.indexOf(this.state.selected_node);
-        if (delete_index > -1){
-            let new_arr = this.state.nodes
-            new_arr.splice(delete_index, 1)
-            this.setState({
-                select_node: null,
-                nodes: new_arr
-            })
-        }
+        let new_set = this.state.nodes;
+        new_set.delete(this.state.selected_node);
+        this.setState({
+            selected_node: null,
+            nodes: new_set
+        })
     }
 
     is_selected = (node) => node === this.state.selected_node;
@@ -82,20 +108,24 @@ class App extends Component {
         this.setState((state) => {
             return {
                 node_num: state.node_num += 1,
-                nodes: state.nodes.concat(new Node_Info(state.node_num, 1, 50, 50))};
+                nodes: state.nodes.add(new Node_Info(state.node_num.toString(), 1, 50, 50))};
           });
     }
 
     render(){
-        return <div className="app" onMouseDown={()=>this.arrow_event()}>
-            {this.state.nodes.map(node => <Node name={node.name} val={node.val} x={node.x} y={node.y}
-            //{this.state.edges.values.map(edge => <Arrow f)}
-            selected={this.is_selected(node)} on_select={() => this.select_node(node)} drag_event={()=>this.drag_event(node)}/>)}
+
+        return <div className="app" onMouseDown={this.array_event}>
+            {Array.from(this.state.nodes).map(node =>{
+                return <Node id={node.name} name={node.name} val={node.val} x={node.x} y={node.y} selected={this.is_selected(node)} on_select={() => this.select_node(node)} drag_event={()=>this.drag_event(node)}/>
+            })}
+
+            {Array.from(this.state.edges).map(edge=>{
+                let info = arrow_info(edge.target_node.x, edge.target_node.y, edge.dest_node.x, edge.dest_node.y);
+                return <Arrow x={info.get("x")} y={info.get("y")} width={info.get("width")} angle={info.get("angle")}/>})}
+            
             <Navbar addNode={this.add_node} deleteNode={this.delete_node} />
         </div>
     }
 }
 
 ReactDOM.render(<App/>, document.getElementById("root"))
-
-// <Arrow x={50} y={50} width={200} angle={0} />

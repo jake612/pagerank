@@ -15,7 +15,7 @@ export class Node extends Component {
             className += " node_selected"
         }
 
-        return <div className={className} onMouseDown={(e)=>this.event_wrapper(e)} style={{
+        return <div id={this.props.id} className={className} onMouseDown={(e)=>this.event_wrapper(e)} style={{
                 position: "absolute",
                 top: this.props.y + "px",
                 left: this.props.x + "px",
