@@ -3,8 +3,10 @@ import React, {Component} from 'react';
 export class Node extends Component {
 
     event_wrapper(e){
-        this.props.on_select();
-        if (e.button === 0) this.props.drag_event();
+        if (e.button === 0){
+            this.props.on_select();
+            this.props.drag_event();
+        } 
     }
 
 
@@ -19,7 +21,6 @@ export class Node extends Component {
                 position: "absolute",
                 top: this.props.y + "px",
                 left: this.props.x + "px",
-                backgroundColor: "white",
                 width: "50px",
                 height: "50px",
                 borderRadius: "50%",

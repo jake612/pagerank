@@ -68,17 +68,13 @@ html, body {
     margin: auto;
 }
 
-.node_selected {
-    border: 5px solid red;
+.node_info {
+    background-color: white;
 }
-/*
-.line {
-    position: absolute;
-    top: 50%;
-    height: 5px;
-    width: 100%;
-    background-color: black;
-}*/
+
+.node_selected {
+    background-color: red;
+}
 
 .pointer {
     position: absolute;
