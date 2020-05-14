@@ -11,7 +11,6 @@ export class Node extends Component {
 
 
     render(){
-
         let className = "node_info"
         if (this.props.selected){
             className += " node_selected"

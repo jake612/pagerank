@@ -23,7 +23,6 @@ class Edge_Info{
     }
 }
 
-
 class App extends Component {
     constructor(props){
         super(props)
@@ -32,13 +31,17 @@ class App extends Component {
             nodes: new Set(),
             edges: new Set(),
             selected_elem: null,
+            drag_arrow: null
         }
+        this.node_chars = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]);
+        document.onkeydown = this.handle_keypress;
 
     }
 
+
     array_event = (e) => {
         if (e.button !== 2 || this.state.selected_elem === null) {
-            return
+            return;
         }
 
         let target_node = this.state.selected_elem;
@@ -51,6 +54,7 @@ class App extends Component {
                 let dest_node = Array.from(this.state.nodes).filter((node)=>node.name===id);
                 let edge = new Edge_Info(target_node, dest_node[0]);
                 let new_set = this.state.edges.add(edge);
+
                 if (dest_node.length !==0){
                     this.setState({edges: new_set});
                 }
@@ -58,10 +62,17 @@ class App extends Component {
             }catch(err){
                 console.log(err);
             }
-
             document.onmouseup = null;
+            document.onmousemove = null;
+            this.setState({drag_arrow: null});
         }
 
+        let arrow_drag = (event) => {
+            let new_node =  new Node_Info("", "", event.pageX, event.pageY - 80);
+            this.setState({drag_arrow: new_node});
+        }
+
+        document.onmousemove = arrow_drag;
         document.onmouseup = end_drag;
     }
 
@@ -114,7 +125,15 @@ class App extends Component {
         });
     }
 
+    update_node = (original_node, updater) => {
+        let new_nodes = this.state.nodes;
+        new_nodes.delete(original_node);
+        new_nodes.add(updater(original_node));
+        this.setState({nodes: new_nodes})
+    }
+
     delete_elem = () => {
+        if (this.state.selected_elem === null) return;
         if (this.state.selected_elem.type === "node"){
             this.delete_node();
         }else{
@@ -128,20 +147,49 @@ class App extends Component {
         this.setState((state) => {
             return {
                 node_num: state.node_num += 1,
-                nodes: state.nodes.add(new Node_Info(state.node_num.toString(), 1, 50, 50))};
+                nodes: state.nodes.add(new Node_Info(state.node_num.toString(), "1", 50, 50))};
           });
     }
 
     handle_keypress = (e) => {
-        console.log("hello");
-        if (this.state.selected_elem !== null && this.state.selected_elem.type === "node"){
-            console.log(e.key);
+        if (this.state.selected_elem !== null){
+            let key = e.key;
+            if (key === "Delete"){
+                this.delete_elem();
+                return;
+            }
+
+            if (this.state.selected_elem.type === "node"){
+                if (key === "Backspace"){
+                    this.update_node(this.state.selected_elem, (node) => {
+                        if (node.val.length === 1) {
+                            node.val = "";
+                        }else{
+                            node.val = node.val.substring(0, node.val.length - 1);
+                        }
+                        return node;
+                    });
+                } else if (this.node_chars.has(key)){
+                    let matches = this.state.selected_elem.val.match(/\./);
+                    if (key !== "." || (key === "." && matches===null)){
+                        this.update_node(this.state.selected_elem, (node) =>{
+                            node.val+=key;
+                            return node;
+                        });
+                    }
+                }
+            }
         }
     }
 
     render(){
-
-        return <div className="app" onMouseDown={this.array_event} onKeyDown={this.handle_keypress}>
+        let drag_arrow;
+        if (this.state.drag_arrow !== null){
+            drag_arrow = <Arrow selected={false} target_node={this.state.selected_elem} dest_node={this.state.drag_arrow} />;
+        } else{
+            drag_arrow = <div />
+        }
+        return <div className="app" onMouseDown={this.array_event}>
 
             {Array.from(this.state.nodes).map(node =>{
                 return <Node id={node.name} name={node.name} val={node.val} x={node.x} y={node.y} selected={this.is_selected(node)} on_select={() => this.select_elem(node)} drag_event={()=>this.drag_event(node)}/>
@@ -153,13 +201,14 @@ class App extends Component {
                     <polygon points="0 0, 10 3.5, 0 7" />
                     </marker>
                 </defs>
+            {drag_arrow}
             {Array.from(this.state.edges).map(edge=>{
                 //let info = arrow_info(edge.target_node.x, edge.target_node.y, edge.dest_node.x, edge.dest_node.y);
                 return <Arrow selected={this.is_selected(edge)} on_select={() => this.select_elem(edge)} target_node={edge.target_node} dest_node={edge.dest_node}/>})}
             </svg>
-
             
             <Navbar addNode={this.add_node} deleteNode={this.delete_elem} />
+
         </div>
     }
 }

@@ -15,6 +15,7 @@ export class Arrow extends Component{
         if (this.props.selected){
             color = "red";
         }
+        if(this.props.dest_node == null) return null;
         let target_coords = this.calc_line_end(this.props.target_node, this.props.dest_node);
         let dest_coords = this.calc_line_end(this.props.dest_node, this.props.target_node);
         return <line onClick={this.props.on_select} x1={target_coords[0]} y1={target_coords[1]} x2={dest_coords[0]} y2={dest_coords[1]} stroke={color} strokeWidth="1.5" marker-end="url(#arrowhead)"/>
