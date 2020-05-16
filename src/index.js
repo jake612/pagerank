@@ -40,10 +40,12 @@ class App extends Component {
     }
 
     next_rank = () => {
-        let new_set = pagerank_calc(this.state.nodes, this.state.edges);
+        console.log(this.state.edges);
+        let return_info = pagerank_calc(this.state.nodes, this.state.edges);
 
         this.setState({
-            nodes: new_set
+            nodes: return_info[0],
+            edges: return_info[1]
         });
     }
 
@@ -60,12 +62,12 @@ class App extends Component {
             try{
                 let id = target_elem.id
                 let dest_node = Array.from(this.state.nodes).filter((node)=>node.name===id);
-                let edge = new Edge_Info(target_node, dest_node[0]);
-                let new_set = this.state.edges.add(edge);
-
-                if (dest_node.length !==0){
+                if (dest_node.length === 1){
+                    let edge = new Edge_Info(target_node, dest_node[0]);
+                    let new_set = this.state.edges.add(edge);
                     this.setState({edges: new_set});
                 }
+                console.log(this.state.edges);
 
             }catch(err){
                 console.log(err);
