@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import {Navbar} from './navbar.js';
 import {Node} from './node.js';
 import {Arrow} from './arrow.js';
+import {pagerank_calc} from "./pagerank.js";
 
-class Node_Info{
+export class Node_Info{
     constructor(name, val, x, y){
         this.name = name;
         this.val = val;
@@ -15,7 +16,7 @@ class Node_Info{
     }
 }
 
-class Edge_Info{
+export class Edge_Info{
     constructor(target_node, dest_node){
         this.target_node = target_node;
         this.dest_node = dest_node;
@@ -33,11 +34,18 @@ class App extends Component {
             selected_elem: null,
             drag_arrow: null
         }
-        this.node_chars = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]);
+        this.node_chars = new Set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]);
         document.onkeydown = this.handle_keypress;
 
     }
 
+    next_rank = () => {
+        let new_set = pagerank_calc(this.state.nodes, this.state.edges);
+
+        this.setState({
+            nodes: new_set
+        });
+    }
 
     array_event = (e) => {
         if (e.button !== 2 || this.state.selected_elem === null) {
@@ -129,7 +137,7 @@ class App extends Component {
         let new_nodes = this.state.nodes;
         new_nodes.delete(original_node);
         new_nodes.add(updater(original_node));
-        this.setState({nodes: new_nodes})
+        this.setState({nodes: new_nodes});
     }
 
     delete_elem = () => {
@@ -147,8 +155,9 @@ class App extends Component {
         this.setState((state) => {
             return {
                 node_num: state.node_num += 1,
-                nodes: state.nodes.add(new Node_Info(state.node_num.toString(), "1", 50, 50))};
+                nodes: state.nodes.add(new Node_Info(state.node_num.toString(), 0.5, 50, 50))};
           });
+          console.log(this.state.nodes);
     }
 
     handle_keypress = (e) => {
@@ -160,23 +169,18 @@ class App extends Component {
             }
 
             if (this.state.selected_elem.type === "node"){
+                let val_string = this.state.selected_elem.val.toString();
+                if (val_string === "0") val_string = "0.";
                 if (key === "Backspace"){
                     this.update_node(this.state.selected_elem, (node) => {
-                        if (node.val.length === 1) {
-                            node.val = "";
-                        }else{
-                            node.val = node.val.substring(0, node.val.length - 1);
-                        }
+                        node.val = parseFloat(val_string.substring(0, val_string.length - 1));
                         return node;
                     });
                 } else if (this.node_chars.has(key)){
-                    let matches = this.state.selected_elem.val.match(/\./);
-                    if (key !== "." || (key === "." && matches===null)){
-                        this.update_node(this.state.selected_elem, (node) =>{
-                            node.val+=key;
-                            return node;
-                        });
-                    }
+                    this.update_node(this.state.selected_elem, (node) =>{
+                        node.val = parseFloat(val_string + key);
+                        return node;
+                    });
                 }
             }
         }
@@ -207,7 +211,7 @@ class App extends Component {
                 return <Arrow selected={this.is_selected(edge)} on_select={() => this.select_elem(edge)} target_node={edge.target_node} dest_node={edge.dest_node}/>})}
             </svg>
             
-            <Navbar addNode={this.add_node} deleteNode={this.delete_elem} />
+            <Navbar addNode={this.add_node} deleteNode={this.delete_elem} nextRank={this.next_rank}/>
 
         </div>
     }
