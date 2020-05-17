@@ -50,6 +50,8 @@ html, body {
 .header-title {
     text-align: center;
     vertical-align: middle;
+    font-size: 25px;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .navbar {
@@ -60,8 +62,15 @@ html, body {
     left: 25%;
     right: 25%;
     bottom: 30px;
-    height: 40 px;
+    height: 60px;
     width: 50%;
+    border-radius: 10px;
+}
+
+.nav_section {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
 }
 
 .node_name, .node_val {
@@ -70,6 +79,10 @@ html, body {
 
 .node_info {
     background-color: white;
+}
+
+.node_info:hover {
+    cursor: pointer;
 }
 
 .node_selected {
@@ -90,3 +103,28 @@ html, body {
     transform-origin: center center;
 }
 
+.nav_button {
+    height: 50px;
+    background-color: green;
+    border: 2px solid green;
+    color: white;
+}
+
+.nav_button:hover {
+    background-color: white;
+    color: green;
+}
+
+.divider {
+    height: 46px;
+    padding: 7px 0;
+    width: 5px;
+    background-color: black;
+}
+
+.button_wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 25%;
+}

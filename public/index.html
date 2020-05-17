@@ -5,7 +5,8 @@
         <link rel="stylesheet" href="style.css">
         <title>My page</title>
         <script>
-            let clickHandler = (dest) => window.location.href = dest
+            let clickHandler = (dest) => window.location.href = dest;
+            let outsidePage = (dest) => window.open(dest);
         </script>
     </head>
     <body oncontextmenu="return false;">
@@ -14,8 +15,11 @@
                 <li class="header-item" onclick='clickHandler("index.html")'>
                     <p class="header-title">Home</p>
                 </li>
-                <li class="header-item" onclick='clickHandler("other.html")'>
-                        <p class="header-title">Other</p>
+                <li class="header-item" onclick='outsidePage("https://en.wikipedia.org/wiki/PageRank")'>
+                        <p class="header-title">About PageRank</p>
+                </li>
+                <li class="header-item" onclick='outsidePage("https://github.com/jake612")'>
+                        <p class="header-title">Creator</p>
                 </li>
             </ul>
             <div id="root"></div>
