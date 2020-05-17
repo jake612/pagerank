@@ -1,6 +1,6 @@
 import {Edge_Info} from "./index.js";
 
-export let pagerank_calc = (nodes, edges) => {
+export let pagerank_calc = (nodes, edges, damp_val) => {
     let mapping = new Map();
 
     let out_degree = new Map();
@@ -26,11 +26,11 @@ export let pagerank_calc = (nodes, edges) => {
     incoming_edges.forEach((incoming_nodes, node) => {
         let new_val = 0;
         incoming_nodes.forEach(inc_node => {
-            let val = mapping.get(inc_node).val;
+            let val = parseFloat(mapping.get(inc_node).val);
             new_val += val / out_degree.get(inc_node);
         });
         let new_node = Object.assign({}, mapping.get(node));
-        new_node.val = new_val.toFixed(4);
+        new_node.val = ((1-damp_val)/nodes.size + (damp_val*new_val)).toFixed(4).toString();
         name_to_new_node.set(node, new_node);
         return_nodes.add(new_node);
     });

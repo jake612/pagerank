@@ -9,7 +9,7 @@
             let outsidePage = (dest) => window.open(dest);
         </script>
     </head>
-    <body oncontextmenu="return false;">
+    <body>
         <div id="page">
             <ul id="header" class="flex-header">
                 <li class="header-item" onclick='clickHandler("index.html")'>
@@ -22,7 +22,7 @@
                         <p class="header-title">Creator</p>
                 </li>
             </ul>
-            <div id="root"></div>
+            <div id="root" oncontextmenu="return false;"></div>
         </div>
     </body>
 </html>

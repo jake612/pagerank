@@ -31,6 +31,7 @@ class App extends Component {
             node_num: 0,
             nodes: new Set(),
             edges: new Set(),
+            damp_val: 1,
             selected_elem: null,
             drag_arrow: null
         }
@@ -40,10 +41,10 @@ class App extends Component {
     }
 
     next_rank = () => {
-        console.log(this.state.edges);
-        let return_info = pagerank_calc(this.state.nodes, this.state.edges);
+        let return_info = pagerank_calc(this.state.nodes, this.state.edges, this.state.damp_val);
 
         this.setState({
+            selected_elem: null,
             nodes: return_info[0],
             edges: return_info[1]
         });
@@ -156,8 +157,9 @@ class App extends Component {
     add_node = () =>{
         this.setState((state) => {
             return {
+                selected_elem: null,
                 node_num: state.node_num += 1,
-                nodes: state.nodes.add(new Node_Info(state.node_num.toString(), 0.5, 50, 50))};
+                nodes: state.nodes.add(new Node_Info(state.node_num.toString(), "0.5", 50, 50))};
           });
           console.log(this.state.nodes);
     }
@@ -175,17 +177,25 @@ class App extends Component {
                 if (val_string === "0") val_string = "0.";
                 if (key === "Backspace"){
                     this.update_node(this.state.selected_elem, (node) => {
-                        node.val = parseFloat(val_string.substring(0, val_string.length - 1));
+                        node.val = val_string.substring(0, val_string.length - 1);
                         return node;
                     });
                 } else if (this.node_chars.has(key)){
                     this.update_node(this.state.selected_elem, (node) =>{
-                        node.val = parseFloat(val_string + key);
+                        node.val = val_string + key;
                         return node;
                     });
                 }
             }
         }
+    }
+
+    textChange = (e) => {
+        let val = e.target.value;
+        console.log(val);
+        if (isNaN(parseFloat(val))) val = "0";
+        this.setState({
+            damp_val: val});
     }
 
     render(){
@@ -213,7 +223,7 @@ class App extends Component {
                 return <Arrow selected={this.is_selected(edge)} on_select={() => this.select_elem(edge)} target_node={edge.target_node} dest_node={edge.dest_node}/>})}
             </svg>
             
-            <Navbar addNode={this.add_node} deleteNode={this.delete_elem} nextRank={this.next_rank}/>
+            <Navbar addNode={this.add_node} deleteNode={this.delete_elem} nextRank={this.next_rank} damp_val={this.state.damp_val} textClick={()=>this.setState({selected_elem: null})} textChange={this.textChange}/>
 
         </div>
     }
