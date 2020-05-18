@@ -198,6 +198,18 @@ class App extends Component {
             damp_val: val});
     }
 
+    infoPopup = (e) => {
+        alert(`INSTRUCTIONS:
+Add: Adds a new node to the graph
+Select a Node/Edge: Right click on Node or Edge. It will turn red.
+Add an edge: Select a node. Hold left click and drag the arrow over the desired destination node.
+Delete a Node/Edge: Select Node/Edge. Click Delete button.
+Change Node Value: Select Node. Use number keys/backspace to produce desired.
+Next Iteration of Alg.: Click Next button.
+Dampening Value: Set dampening value outlined at "About PageRank" Wikipedia link.
+        `);
+    }
+
     render(){
         let drag_arrow;
         if (this.state.drag_arrow !== null){
@@ -223,7 +235,7 @@ class App extends Component {
                 return <Arrow selected={this.is_selected(edge)} on_select={() => this.select_elem(edge)} target_node={edge.target_node} dest_node={edge.dest_node}/>})}
             </svg>
             
-            <Navbar addNode={this.add_node} deleteNode={this.delete_elem} nextRank={this.next_rank} damp_val={this.state.damp_val} textClick={()=>this.setState({selected_elem: null})} textChange={this.textChange}/>
+            <Navbar addNode={this.add_node} deleteNode={this.delete_elem} nextRank={this.next_rank} infoPopup={this.infoPopup} damp_val={this.state.damp_val} textClick={()=>this.setState({selected_elem: null})} textChange={this.textChange}/>
 
         </div>
     }

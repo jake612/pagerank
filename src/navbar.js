@@ -16,6 +16,7 @@ export class Navbar extends Component {
                         <input type="number" id="damp" name="damp" min="0.0" max="1.0" step="0.1" value={this.props.damp_val} style={{width: "100%"}} onClick={this.props.textClick} onChange={this.props.textChange}/>
                     </form>
                 </div>
+                <div className="button_wrapper"><button className="info_button" onClick={this.props.infoPopup}>?</button></div>
             </div>
         </div>
     }
